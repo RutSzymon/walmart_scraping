@@ -5,4 +5,5 @@ class Review < ActiveRecord::Base
   validates :product, presence: true
   validates :published_at, presence: true
   validates :stars, presence: true
+  validates :walmart_id, presence: true
 end

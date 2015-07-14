@@ -20,10 +20,12 @@ RSpec.describe Review, type: :model do
     it { should validate_presence_of(:published_at) }
 
     it { should validate_presence_of(:stars) }
+
+    it { should validate_presence_of(:walmart_id) }
   end
 
   describe "via DB columns" do
-    %w(title content stars published_at product_id created_at updated_at).each do |column_name|
+    %w(title content stars published_at product_id walmart_id created_at updated_at).each do |column_name|
       it { should have_db_column(column_name) }
     end
   end
