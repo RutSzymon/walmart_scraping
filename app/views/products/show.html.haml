@@ -1,0 +1,20 @@
+.well
+  %h2= @product.name
+
+%h3= "Reviews"
+%hr
+
+%table.table.table-striped
+  %thead
+    %tr
+      %th= "Title"
+      %th= "Stars"
+      %th= "Published at"
+      %th= "Content"
+  %tbody
+    - @product.reviews.each do |review|
+      %tr
+        %td= link_to review.title
+        %td= review.stars
+        %td= review.published_at
+        %td= review.content

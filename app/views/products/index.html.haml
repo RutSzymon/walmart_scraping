@@ -1,0 +1,17 @@
+.well
+  = simple_form_for @product, html: { class: "form-inline" } do |f|
+    = f.input :url, label: false, input_html: { style: "width: 800px;" }
+    = f.submit "Add", class: "btn btn-primary"
+
+%table.table.table-striped
+  %thead
+    %tr
+      %th= "Name"
+      %th= "ID"
+      %th= "Updated at"
+  %tbody
+    - @products.each do |product|
+      %tr
+        %td= link_to product.name, product
+        %td= product.walmart_id
+        %td= product.updated_at
