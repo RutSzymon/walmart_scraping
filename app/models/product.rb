@@ -8,7 +8,7 @@ class Product < ActiveRecord::Base
     doc = Nokogiri::HTML(open(url))
     reviews_url = doc.at_css("#WMItemSeeAllRevLnk")[:href]
     walmart_id = reviews_url.split("/")[3]
-    where(walmart_id: walmart_id).first || add_new(doc, walmart_id, name, reviews_url)
+    (product = where(walmart_id: walmart_id).first) ? update_old(doc, product, reviews_url) : add_new(doc, walmart_id, name, reviews_url)
   end
 
   def to_s
@@ -25,10 +25,19 @@ class Product < ActiveRecord::Base
       product
     end
 
-    def add_reviews(product, reviews_url, page)
+    def update_old(doc, product, reviews_url)
+      reviews_count = doc.at_css(".review-stats span").text.split(" ")[2].to_i
+      new_reviews_count = reviews_count - product.reviews.size
+      (product.reviews.size/20+1..reviews_count/20+1).each_with_index do |page, i|
+        add_reviews(product, reviews_url, page, i == 0 ? new_reviews_count%20 : 0)
+      end
+      product
+    end
+
+    def add_reviews(product, reviews_url, page, index = 0)
       url = "https://www.walmart.com#{reviews_url}?limit=20&page=#{page}&sort=submission-asc"
       doc = Nokogiri::HTML(open(url))
-      doc.css(".js-customer-review").each do |doc_review|
+      doc.css(".js-customer-review")[-index..19].each do |doc_review|
         title = doc_review.at_css(".customer-review-title").text
         content = doc_review.at_css(".js-customer-review-text").text.gsub("Read more", "")
         stars = doc_review.css(".star-rated").length
