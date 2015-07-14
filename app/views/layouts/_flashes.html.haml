@@ -1,0 +1,7 @@
+#flashes
+  - flashes.each do |type, message|
+    - if flash[type].present?
+      .alert-message.alert.fade.in{ "data-alert" => "alert", class: "alert-#{message}" }
+        = flash[type].html_safe
+        = link_to "&times;".html_safe, "#", class: "close", "data-dismiss" => "alert"
+      = flash[type].clear
