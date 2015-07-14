@@ -26,12 +26,14 @@ ActiveRecord::Schema.define(version: 20150714135115) do
     t.string   "title"
     t.text     "content"
     t.integer  "stars"
-    t.datetime "published_at"
+    t.date     "published_at"
+    t.integer  "walmart_id"
     t.integer  "product_id"
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
   end
 
   add_index "reviews", ["product_id"], name: "index_reviews_on_product_id"
+  add_index "reviews", ["walmart_id"], name: "index_reviews_on_walmart_id"
 
 end
