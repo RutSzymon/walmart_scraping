@@ -1,3 +1,6 @@
+require "nokogiri"
+require "open-uri"
+
 class Product < ActiveRecord::Base
   has_many :reviews, dependent: :destroy
 
@@ -15,6 +18,8 @@ class Product < ActiveRecord::Base
     name
   end
 
+  attr_accessor :url
+
   class << self
     private
     def add_new(doc, walmart_id, name, reviews_url)
@@ -29,8 +34,9 @@ class Product < ActiveRecord::Base
       reviews_count = doc.at_css(".review-stats span").text.split(" ")[2].to_i
       new_reviews_count = reviews_count - product.reviews.size
       (product.reviews.size/20+1..reviews_count/20+1).each_with_index do |page, i|
-        add_reviews(product, reviews_url, page, i == 0 ? new_reviews_count%20 : 0)
+        add_reviews(product, reviews_url, page, i == 0 ? new_reviews_count%20 : 0) if new_reviews_count != 0
       end
+      product.touch
       product
     end
 

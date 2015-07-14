@@ -1,7 +1,5 @@
 # encoding: utf-8
 require "rails_helper"
-require "nokogiri"
-require "open-uri"
 
 RSpec.describe Product, type: :model do
   describe "via relations" do
