@@ -26,7 +26,8 @@ class Product < ActiveRecord::Base
       reviews_count = doc.at_css(".review-stats span").text.split(" ")[2].to_i
       name = doc.at_css(".product-name").text
       product = create(name: name, walmart_id: walmart_id)
-      (1..reviews_count/20+1).each{ |page| add_reviews(product, reviews_url, page) }
+      (1..reviews_count/20+1).map{ |page| add_reviews(product, reviews_url, page) }
+      Review.import product.reviews.to_a
       product
     end
 
@@ -36,7 +37,7 @@ class Product < ActiveRecord::Base
       (product.reviews.size/20+1..reviews_count/20+1).each_with_index do |page, i|
         add_reviews(product, reviews_url, page, i == 0 ? new_reviews_count%20 : 0) if new_reviews_count != 0
       end
-      product.touch
+      product.save
       product
     end
 
@@ -48,7 +49,7 @@ class Product < ActiveRecord::Base
         content = doc_review.at_css(".js-customer-review-text").text.gsub("Read more", "")
         stars = doc_review.css(".star-rated").length
         published_at = Date.strptime(doc_review.at_css(".customer-review-date").text, "%m/%d/%Y")
-        product.reviews.create(title: title, content: content, stars: stars, published_at: published_at, walmart_id: doc_review["data-content-id"])
+        product.reviews.new(title: title, content: content, stars: stars, published_at: published_at, walmart_id: doc_review["data-content-id"])
       end
     end
   end

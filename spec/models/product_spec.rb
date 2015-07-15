@@ -51,6 +51,7 @@ RSpec.describe Product, type: :model do
 
         it "should create reviews" do
           product = Product.add_or_update("http://www.walmart.com/ip/44990290")
+          product.reload
           reviews_count = product.reviews.size
           product.reviews.last.destroy
           expect(Review.count).to eq(reviews_count - 1)
